@@ -33,9 +33,10 @@ public class DrinkPlannerApplication {
                     new Beverage("Vittel", 0f, false))
                     .log()
                     .map(beverageService::save)
-                    .filter(Beverage::getTrappist)
+                    .filter(Beverage::isTrappist)
                     .count()
                     .subscribe(c -> LOG.info("Number of trappist beers: {}", c));
+            LOG.info("Done !");
         };
     }
 }
