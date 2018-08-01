@@ -9,8 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Stream;
 
 @SpringBootApplication
 public class DrinkPlannerApplication {
@@ -25,22 +24,24 @@ public class DrinkPlannerApplication {
     public CommandLineRunner startHere(BeverageService beverageService) {
         return args -> {
             LOG.info("We start !");
-            List<Beverage> beverages = Arrays.asList(
+            long count = Stream.of(
                     new Beverage("Chimay Bleue", 9.5f, true),
                     new Beverage("Bush Ambrée", 12f, false),
                     new Beverage("Orval", 6.5f, true),
                     new Beverage("Hoogaerden", 4f, false),
                     new Beverage("Cuvée des Trolls", 5.5f, false),
-                    new Beverage("Vittel", 0f, false)
-            );
+                    new Beverage("Vittel", 0f, false))
+                    .map(beverageService::save)
+                    .filter(Beverage::getTrappist)
+                    .count();
 
-            int count = 0;
-            for (Beverage bev : beverages) {
-                Beverage savedBev = beverageService.save(bev);
-                if (savedBev.getTrappist()) {
-                    count++;
-                }
-            }
+//            int count = 0;
+//            for (Beverage bev : beverages) {
+//                Beverage savedBev = beverageService.save(bev);
+//                if (savedBev.getTrappist()) {
+//                    count++;
+//                }
+//            }
             LOG.info("Number of trappist beers : {}", count);
         };
     }
