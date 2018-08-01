@@ -8,8 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import java.util.stream.Stream;
+import reactor.core.publisher.Flux;
 
 @SpringBootApplication
 public class DrinkPlannerApplication {
@@ -24,25 +23,19 @@ public class DrinkPlannerApplication {
     public CommandLineRunner startHere(BeverageService beverageService) {
         return args -> {
             LOG.info("We start !");
-            long count = Stream.of(
+
+            Flux.just(
                     new Beverage("Chimay Bleue", 9.5f, true),
                     new Beverage("Bush Ambrée", 12f, false),
                     new Beverage("Orval", 6.5f, true),
                     new Beverage("Hoogaerden", 4f, false),
                     new Beverage("Cuvée des Trolls", 5.5f, false),
                     new Beverage("Vittel", 0f, false))
+                    .log()
                     .map(beverageService::save)
                     .filter(Beverage::getTrappist)
-                    .count();
-
-//            int count = 0;
-//            for (Beverage bev : beverages) {
-//                Beverage savedBev = beverageService.save(bev);
-//                if (savedBev.getTrappist()) {
-//                    count++;
-//                }
-//            }
-            LOG.info("Number of trappist beers : {}", count);
+                    .count()
+                    .subscribe(c -> LOG.info("Number of trappist beers: {}", c));
         };
     }
 }
