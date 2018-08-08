@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuples;
 
 @SpringBootApplication
 public class DrinkPlannerApplication {
@@ -21,17 +22,21 @@ public class DrinkPlannerApplication {
     }
 
     @Bean
-    public CommandLineRunner startHere(BeverageService beverageService) {
+    public CommandLineRunner initBeverages(BeverageService beverageService) {
         return args -> {
             LOG.info("We start !");
 
+            Flux<String> ids = Flux.range(0, 10)
+                    .map(String::valueOf);
+
             Flux<Beverage> beverages = Flux.just(
-                    new Beverage("Chimay Bleue", 9.5f, true),
-                    new Beverage("Bush Ambrée", 12f, false),
-                    new Beverage("Orval", 6.5f, true),
-                    new Beverage("Hoogaerden", 4f, false),
-                    new Beverage("Cuvée des Trolls", 5.5f, false),
-                    new Beverage("Vittel", 0f, false));
+                    Tuples.of("Chimay Bleue", 9f, 33L, true),
+                    Tuples.of("Bush Ambrée", 12f, 33L, false),
+                    Tuples.of("Orval", 6.5f, 33L, true),
+                    Tuples.of("Hoogaerden", 4f, 25L, false),
+                    Tuples.of("Cuvée des Trolls", 7f, 25L, false),
+                    Tuples.of("Vittel", 0f, 50L, false))
+                    .zipWith(ids, (b, id) -> new Beverage(id, b.getT1(), b.getT2(), b.getT3(), b.getT4()));
 
             LOG.info("Created");
 

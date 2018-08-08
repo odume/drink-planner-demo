@@ -1,5 +1,6 @@
 package com.soprabanking.drinkplanner.service;
 
+import com.soprabanking.drinkplanner.BeverageRepository;
 import com.soprabanking.drinkplanner.model.Beverage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,9 +11,15 @@ public class BeverageService {
 
     private static final Logger LOG = LoggerFactory.getLogger(BeverageService.class);
 
+    private BeverageRepository repository;
+
+    public BeverageService(BeverageRepository repository) {
+        this.repository = repository;
+    }
+
     public Beverage save(Beverage beverage) {
         LOG.info("Saving Beverage {}", beverage.getName());
-        return beverage;
+        return repository.save(beverage);
     }
 
 }
