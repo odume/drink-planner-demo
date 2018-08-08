@@ -41,7 +41,7 @@ public class DrinkPlannerApplication {
             LOG.info("Created");
 
             Mono<Long> trappistCount = beverages.log()
-                    .map(beverageService::save)
+                    .flatMap(b -> beverageService.save(b))
                     .filter(Beverage::isTrappist)
                     .count();
 
@@ -52,4 +52,6 @@ public class DrinkPlannerApplication {
             LOG.info("Done !");
         };
     }
+
+
 }

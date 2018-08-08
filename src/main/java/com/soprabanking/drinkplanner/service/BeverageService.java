@@ -5,6 +5,7 @@ import com.soprabanking.drinkplanner.model.Beverage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 public class BeverageService {
@@ -17,9 +18,11 @@ public class BeverageService {
         this.repository = repository;
     }
 
-    public Beverage save(Beverage beverage) {
-        LOG.info("Saving Beverage {}", beverage.getName());
-        return repository.save(beverage);
+    public Mono<Beverage> save(Beverage beverage) {
+        return Mono.just(beverage)
+                .doOnNext(b -> LOG.info("Saving Beverage {}", b.getName()))
+                .flatMap(repository::save)
+                .doOnSuccess(b -> LOG.info("{} saved successfully", b.getName()));
     }
 
 }

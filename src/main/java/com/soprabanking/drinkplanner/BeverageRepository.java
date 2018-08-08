@@ -1,8 +1,8 @@
 package com.soprabanking.drinkplanner;
 
 import com.soprabanking.drinkplanner.model.Beverage;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
-public interface BeverageRepository extends MongoRepository<Beverage, Long> {
+public interface BeverageRepository extends ReactiveMongoRepository<Beverage, Long> {
 
 }
