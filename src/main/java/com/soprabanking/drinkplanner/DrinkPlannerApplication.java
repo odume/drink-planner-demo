@@ -9,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @SpringBootApplication
 public class DrinkPlannerApplication {
@@ -24,18 +25,25 @@ public class DrinkPlannerApplication {
         return args -> {
             LOG.info("We start !");
 
-            Flux.just(
+            Flux<Beverage> beverages = Flux.just(
                     new Beverage("Chimay Bleue", 9.5f, true),
                     new Beverage("Bush Ambrée", 12f, false),
                     new Beverage("Orval", 6.5f, true),
                     new Beverage("Hoogaerden", 4f, false),
                     new Beverage("Cuvée des Trolls", 5.5f, false),
-                    new Beverage("Vittel", 0f, false))
-                    .log()
+                    new Beverage("Vittel", 0f, false));
+
+            LOG.info("Created");
+
+            Mono<Long> trappistCount = beverages.log()
                     .map(beverageService::save)
                     .filter(Beverage::isTrappist)
-                    .count()
-                    .subscribe(c -> LOG.info("Number of trappist beers: {}", c));
+                    .count();
+
+            LOG.info("Transformed");
+
+            trappistCount.subscribe(c -> LOG.info("Number of trappist beers: {}", c));
+
             LOG.info("Done !");
         };
     }
