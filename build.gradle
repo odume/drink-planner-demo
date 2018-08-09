@@ -9,6 +9,9 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
 }
+plugins {
+    id 'net.ltgt.apt' version '0.10'
+}
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
@@ -23,12 +26,12 @@ repositories {
     mavenCentral()
 }
 
-
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     compile('org.springframework.boot:spring-boot-starter-webflux')
     runtime('org.springframework.boot:spring-boot-devtools')
     compileOnly('org.projectlombok:lombok')
+    apt("org.projectlombok:lombok")
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('io.projectreactor:reactor-test')
 }
