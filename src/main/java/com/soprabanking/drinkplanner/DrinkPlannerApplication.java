@@ -9,6 +9,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuples;
@@ -55,5 +60,17 @@ public class DrinkPlannerApplication {
         };
     }
 
+    @Bean
+    public ReactiveRedisTemplate<String, Beverage> reactiveJsonPostRedisTemplate(
+            ReactiveRedisConnectionFactory connectionFactory) {
 
+        Jackson2JsonRedisSerializer<Beverage> serializer = new Jackson2JsonRedisSerializer<>(Beverage.class);
+
+        RedisSerializationContext<String, Beverage> serializationContext =
+                RedisSerializationContext.<String, Beverage>newSerializationContext(new StringRedisSerializer())
+                        .value(serializer)
+                        .build();
+
+        return new ReactiveRedisTemplate<>(connectionFactory, serializationContext);
+    }
 }

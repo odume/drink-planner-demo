@@ -3,6 +3,7 @@ package com.soprabanking.drinkplanner.service;
 import com.soprabanking.drinkplanner.model.Beverage;
 import com.soprabanking.drinkplanner.repository.BeverageCache;
 import com.soprabanking.drinkplanner.repository.BeverageRepository;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -37,18 +38,18 @@ public class BeverageService {
                 .switchIfEmpty(newBeverage);
     }
 
-//    public Mono<Beverage> findOne(String id) {
-//        Mono<Beverage> fromCache = Mono.just(id)
-//                .flatMap(cache::get);
-//
-//        Mono<Beverage> fromDatabase = Mono.just(id)
-//                .map(ObjectId::new)
-//                .flatMap(repository::findById)
-//                .doOnNext(b -> LOG.info("Got beverage {} from database", b.getName()))
-//                .flatMap(cache::put);
-//
-//        return Flux.concat(fromCache, fromDatabase).next();
-//    }
+    public Mono<Beverage> findOne(String id) {
+        Mono<Beverage> fromCache = Mono.just(id)
+                .flatMap(cache::get);
+
+        Mono<Beverage> fromDatabase = Mono.just(id)
+                .map(ObjectId::new)
+                .flatMap(repository::findById)
+                .doOnNext(b -> LOG.info("Got beverage {} from database", b.getName()))
+                .flatMap(cache::put);
+
+        return Flux.concat(fromCache, fromDatabase).next();
+    }
 
     public Flux<Beverage> findAll(Pageable page) {
         return repository.findAll()

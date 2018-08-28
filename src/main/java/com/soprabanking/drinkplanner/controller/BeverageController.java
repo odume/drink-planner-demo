@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -29,5 +30,11 @@ public class BeverageController {
         return service.findAll(PageRequest.of(page, pageSize))
                 .map(BeverageMapper::toDto)
                 .delayElements(Duration.of(300, ChronoUnit.MILLIS));
+    }
+
+    @GetMapping("beverages/{id}")
+    public Mono<BeverageDTO> getBeverage(@PathVariable String id) {
+        return service.findOne(id)
+                .map(BeverageMapper::toDto);
     }
 }
