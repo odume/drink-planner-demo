@@ -1,9 +1,12 @@
 package com.soprabanking.drinkplanner.controller;
 
-import com.soprabanking.drinkplanner.BeverageRepository;
 import com.soprabanking.drinkplanner.mapper.BeverageMapper;
 import com.soprabanking.drinkplanner.model.BeverageDTO;
+import com.soprabanking.drinkplanner.service.BeverageService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
@@ -14,15 +17,16 @@ import java.time.temporal.ChronoUnit;
 public class BeverageController {
 
 
-    private BeverageRepository repository;
+    private BeverageService service;
 
-    public BeverageController(BeverageRepository repository) {
-        this.repository = repository;
+    public BeverageController(BeverageService service) {
+        this.service = service;
     }
 
     @GetMapping("beverages")
-    public Flux<BeverageDTO> allBeverages() {
-        return repository.findAll()
+    public Flux<BeverageDTO> allBeverages(@RequestParam(required = false, defaultValue = "0") int page,
+                                          @RequestParam(required = false, defaultValue = "50") int pageSize) {
+        return service.findAll(PageRequest.of(page, pageSize))
                 .map(BeverageMapper::toDto)
                 .delayElements(Duration.of(300, ChronoUnit.MILLIS));
     }
