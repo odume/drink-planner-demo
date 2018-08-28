@@ -2,6 +2,7 @@ package com.soprabanking.drinkplanner;
 
 import com.soprabanking.drinkplanner.model.Beverage;
 import com.soprabanking.drinkplanner.service.BeverageService;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -26,8 +27,8 @@ public class DrinkPlannerApplication {
         return args -> {
             LOG.info("We start !");
 
-            Flux<String> ids = Flux.range(0, 10)
-                    .map(String::valueOf);
+            Flux<ObjectId> ids = Flux.range(0, Integer.MAX_VALUE)
+                    .map(i -> ObjectId.get());
 
             Flux<Beverage> beverages = Flux.just(
                     Tuples.of("Chimay Bleue", 9f, 33L, true),
@@ -40,8 +41,9 @@ public class DrinkPlannerApplication {
 
             LOG.info("Created");
 
-            Mono<Long> trappistCount = beverages.log()
-                    .flatMap(b -> beverageService.save(b))
+            Mono<Long> trappistCount = beverages
+//                    .log()
+                    .flatMap(beverageService::save)
                     .filter(Beverage::isTrappist)
                     .count();
 
