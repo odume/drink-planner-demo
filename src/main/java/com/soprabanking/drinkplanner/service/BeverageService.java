@@ -14,15 +14,24 @@ public class BeverageService {
 
     private BeverageRepository repository;
 
-    public BeverageService(BeverageRepository repository) {
+    private BeverageCache cache;
+
+    public BeverageService(BeverageRepository repository, BeverageCache cache) {
         this.repository = repository;
+        this.cache = cache;
     }
 
     public Mono<Beverage> save(Beverage beverage) {
-        return Mono.just(beverage)
-                .doOnNext(b -> LOG.info("Saving Beverage {}", b.getName()))
+        Mono<Beverage> newBeverage = Mono.just(beverage)
                 .flatMap(repository::save)
                 .doOnSuccess(b -> LOG.info("{} saved successfully", b.getName()));
+
+        return Mono.just(beverage)
+                .doOnNext(b -> LOG.info("Saving Beverage {}", b.getName()))
+                .map(Beverage::getName)
+                .flatMap(repository::findByName)
+                .doOnNext(b -> LOG.info("Already exists : {}", b))
+                .switchIfEmpty(newBeverage);
     }
 
 }
