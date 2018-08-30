@@ -10,8 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
+
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 @Service
 public class BeverageService {
@@ -21,8 +22,6 @@ public class BeverageService {
     private BeverageRepository repository;
 
     private BeverageCache cache;
-
-    private Scheduler tasting = Schedulers.newElastic("tasting");
 
 
     public BeverageService(BeverageRepository repository, BeverageCache cache) {
@@ -37,7 +36,7 @@ public class BeverageService {
 
         return Mono.just(beverage)
 //                .doOnNext(b -> tasteBlocking(b))
-                .flatMap(b -> tasteAsynchronously(b).subscribeOn(tasting))
+                .flatMap(b -> tasteAsynchronously(b))
                 .doOnNext(b -> LOG.info("Now Saving Beverage {}", b.getName()))
                 .map(Beverage::getName)
                 .flatMap(repository::findByName)
@@ -53,10 +52,10 @@ public class BeverageService {
 
     private Mono<Beverage> tasteAsynchronously(Beverage beverage) {
         return Mono.just(beverage)
-                .doOnNext(this::tasteBlocking);
-//                .doOnNext(b -> LOG.info("Tasting {}...", b.getName()))
-//                .delayElement(Duration.of(beverage.getAlcoholRate().longValue() * 100, ChronoUnit.MILLIS))
-//                .doOnNext(b -> LOG.info("{} is tasted ok", b.getName()));
+//                .doOnNext(this::tasteBlocking);
+                .doOnNext(b -> LOG.info("Tasting {}...", b.getName()))
+                .delayElement(Duration.of(beverage.getAlcoholRate().longValue() * 100, ChronoUnit.MILLIS))
+                .doOnNext(b -> LOG.info("{} is tasted ok", b.getName()));
     }
 
     private void sleep(Beverage beverage) {
