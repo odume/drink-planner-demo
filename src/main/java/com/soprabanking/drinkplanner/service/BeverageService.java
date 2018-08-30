@@ -31,8 +31,8 @@ public class BeverageService {
                 .doOnSuccess(b -> LOG.info("{} saved successfully", b.getName()));
 
         return Mono.just(beverage)
-                .doOnNext(b -> tasteBlocking(b))
-//                .flatMap(b -> tasteAsynchronously(b))
+//                .doOnNext(b -> tasteBlocking(b))
+                .flatMap(b -> tasteAsynchronously(b))
                 .doOnNext(b -> LOG.info("Now Saving Beverage {}", b.getName()))
                 .map(Beverage::getName)
                 .flatMap(repository::findByName)
