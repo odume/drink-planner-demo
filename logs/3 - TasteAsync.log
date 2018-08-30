@@ -1,0 +1,35 @@
+2018-08-30 14:42:44.324  INFO 17988 --- [  restartedMain] c.s.d.DrinkPlannerApplication            : We start !
+2018-08-30 14:42:44.331  INFO 17988 --- [  restartedMain] c.s.d.DrinkPlannerApplication            : Created
+2018-08-30 14:42:44.337  INFO 17988 --- [  restartedMain] c.s.d.DrinkPlannerApplication            : Transformed
+2018-08-30 14:42:44.343  INFO 17988 --- [  restartedMain] c.s.d.DrinkPlannerApplication            : Done after 18 ms !
+2018-08-30 14:42:44.359  INFO 17988 --- [   processing-1] c.s.d.DrinkPlannerApplication            : Processing Chimay Bleue
+2018-08-30 14:42:44.377  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Tasting Chimay Bleue...
+2018-08-30 14:42:45.279  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Chimay Bleue is tasted ok
+2018-08-30 14:42:45.279  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Now Saving Beverage Chimay Bleue
+2018-08-30 14:42:45.351  INFO 17988 --- [   processing-1] c.s.d.DrinkPlannerApplication            : Processing Bush Ambrée
+2018-08-30 14:42:45.351  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Tasting Bush Ambrée...
+2018-08-30 14:42:45.398  INFO 17988 --- [ntLoopGroup-2-2] c.s.d.service.BeverageService            : Already exists : Beverage(id=5b866aeb07467720445fb358, name=Chimay Bleue, alcoholRate=9.0, capacity=33, trappist=true)
+2018-08-30 14:42:46.569  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Bush Ambrée is tasted ok
+2018-08-30 14:42:46.569  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Now Saving Beverage Bush Ambrée
+2018-08-30 14:42:46.573  INFO 17988 --- [   processing-1] c.s.d.DrinkPlannerApplication            : Processing Orval
+2018-08-30 14:42:46.575  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Tasting Orval...
+2018-08-30 14:42:46.576  INFO 17988 --- [ntLoopGroup-2-2] c.s.d.service.BeverageService            : Already exists : Beverage(id=5b866aeb07467720445fb359, name=Bush Ambrée, alcoholRate=12.0, capacity=33, trappist=false)
+2018-08-30 14:42:47.194  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Orval is tasted ok
+2018-08-30 14:42:47.195  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Now Saving Beverage Orval
+2018-08-30 14:42:47.200  INFO 17988 --- [   processing-1] c.s.d.DrinkPlannerApplication            : Processing Vittel
+2018-08-30 14:42:47.201  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Tasting Vittel...
+2018-08-30 14:42:47.201  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Vittel is tasted ok
+2018-08-30 14:42:47.201  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Now Saving Beverage Vittel
+2018-08-30 14:42:47.202  INFO 17988 --- [ntLoopGroup-2-2] c.s.d.service.BeverageService            : Already exists : Beverage(id=5b866aeb07467720445fb35a, name=Orval, alcoholRate=6.5, capacity=33, trappist=true)
+2018-08-30 14:42:47.204  INFO 17988 --- [   processing-1] c.s.d.DrinkPlannerApplication            : Processing Hoogaerden
+2018-08-30 14:42:47.204  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Tasting Hoogaerden...
+2018-08-30 14:42:47.208  INFO 17988 --- [ntLoopGroup-2-2] c.s.d.service.BeverageService            : Already exists : Beverage(id=5b866aeb07467720445fb35b, name=Vittel, alcoholRate=0.0, capacity=50, trappist=false)
+2018-08-30 14:42:47.605  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Hoogaerden is tasted ok
+2018-08-30 14:42:47.605  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Now Saving Beverage Hoogaerden
+2018-08-30 14:42:47.607  INFO 17988 --- [   processing-1] c.s.d.DrinkPlannerApplication            : Processing Cuvée des Trolls
+2018-08-30 14:42:47.607  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Tasting Cuvée des Trolls...
+2018-08-30 14:42:47.610  INFO 17988 --- [ntLoopGroup-2-2] c.s.d.service.BeverageService            : Already exists : Beverage(id=5b866aec07467720445fb35c, name=Hoogaerden, alcoholRate=4.0, capacity=25, trappist=false)
+2018-08-30 14:42:48.307  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Cuvée des Trolls is tasted ok
+2018-08-30 14:42:48.308  INFO 17988 --- [   processing-1] c.s.d.service.BeverageService            : Now Saving Beverage Cuvée des Trolls
+2018-08-30 14:42:48.315  INFO 17988 --- [ntLoopGroup-2-2] c.s.d.service.BeverageService            : Already exists : Beverage(id=5b866aec07467720445fb35d, name=Cuvée des Trolls, alcoholRate=7.0, capacity=25, trappist=false)
+2018-08-30 14:42:48.315  INFO 17988 --- [ntLoopGroup-2-2] c.s.d.DrinkPlannerApplication            : All created in 3962 ms. Number of trappist beers 2
