@@ -58,7 +58,8 @@ public class DrinkPlannerApplication {
             Scheduler saving = Schedulers.newElastic("saving");
             Mono<Tuple2<Long, Long>> trappistCount = beverages
                     .doOnNext(b -> LOG.info("Processing {}", b.getName()))
-                    .flatMap(b -> beverageService.save(b))
+                    .flatMap(b -> beverageService.save(b).subscribeOn(saving))
+                    .doOnNext(b -> LOG.info("Processed {}", b.getName()))
                     .filter(Beverage::isTrappist)
                     .count()
                     .elapsed(); // this is a zip to a Tuple containing the elapsed time and the count from previous step
