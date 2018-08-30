@@ -22,7 +22,7 @@ public class BeverageService {
 
     private BeverageCache cache;
 
-    private Scheduler saving = Schedulers.newElastic("saving");
+    private Scheduler tasting = Schedulers.newElastic("tasting");
 
 
     public BeverageService(BeverageRepository repository, BeverageCache cache) {
@@ -36,9 +36,8 @@ public class BeverageService {
                 .doOnSuccess(b -> LOG.info("{} saved successfully", b.getName()));
 
         return Mono.just(beverage)
-                .publishOn(saving)
 //                .doOnNext(b -> tasteBlocking(b))
-                .flatMap(b -> tasteAsynchronously(b))
+                .flatMap(b -> tasteAsynchronously(b).subscribeOn(tasting))
                 .doOnNext(b -> LOG.info("Now Saving Beverage {}", b.getName()))
                 .map(Beverage::getName)
                 .flatMap(repository::findByName)
