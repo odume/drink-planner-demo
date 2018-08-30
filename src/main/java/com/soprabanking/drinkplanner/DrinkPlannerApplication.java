@@ -65,7 +65,9 @@ public class DrinkPlannerApplication {
 
             LOG.info("Transformed");
 
-            trappistCount.subscribe(c ->
+            trappistCount
+                    .subscribeOn(Schedulers.newElastic("processing"))
+                    .subscribe(c ->
                     LOG.info("All created in {} ms. Number of trappist beers {}", c.getT1(), c.getT2()));
 
             LOG.info("Done after {} ms !", Duration.between(beginning, now()).toMillis());
