@@ -16,7 +16,15 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
+import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
+
+import java.time.Duration;
+import java.time.Instant;
+
+import static java.time.Instant.now;
 
 @SpringBootApplication
 public class DrinkPlannerApplication {
@@ -30,6 +38,7 @@ public class DrinkPlannerApplication {
     @Bean
     public CommandLineRunner initBeverages(BeverageService beverageService) {
         return args -> {
+            Instant beginning = now();
             LOG.info("We start !");
 
             Flux<ObjectId> ids = Flux.range(0, Integer.MAX_VALUE)
@@ -39,24 +48,27 @@ public class DrinkPlannerApplication {
                     Tuples.of("Chimay Bleue", 9f, 33L, true),
                     Tuples.of("Bush Ambrée", 12f, 33L, false),
                     Tuples.of("Orval", 6.5f, 33L, true),
+                    Tuples.of("Vittel", 0f, 50L, false),
                     Tuples.of("Hoogaerden", 4f, 25L, false),
-                    Tuples.of("Cuvée des Trolls", 7f, 25L, false),
-                    Tuples.of("Vittel", 0f, 50L, false))
+                    Tuples.of("Cuvée des Trolls", 7f, 25L, false))
                     .zipWith(ids, (b, id) -> new Beverage(id, b.getT1(), b.getT2(), b.getT3(), b.getT4()));
 
             LOG.info("Created");
 
-            Mono<Long> trappistCount = beverages
-//                    .log()
-                    .flatMap(beverageService::save)
+            Scheduler saving = Schedulers.newElastic("saving");
+            Mono<Tuple2<Long, Long>> trappistCount = beverages
+                    .doOnNext(b -> LOG.info("Processing {}", b.getName()))
+                    .flatMap(b -> beverageService.save(b))
                     .filter(Beverage::isTrappist)
-                    .count();
+                    .count()
+                    .elapsed(); // this is a zip to a Tuple containing the elapsed time and the count from previous step
 
             LOG.info("Transformed");
 
-            trappistCount.subscribe(c -> LOG.info("Number of trappist beers: {}", c));
+            trappistCount.subscribe(c ->
+                    LOG.info("All created in {} ms. Number of trappist beers {}", c.getT1(), c.getT2()));
 
-            LOG.info("Done !");
+            LOG.info("Done after {} ms !", Duration.between(beginning, now()).toMillis());
         };
     }
 

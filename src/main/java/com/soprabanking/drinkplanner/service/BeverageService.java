@@ -31,11 +31,37 @@ public class BeverageService {
                 .doOnSuccess(b -> LOG.info("{} saved successfully", b.getName()));
 
         return Mono.just(beverage)
-                .doOnNext(b -> LOG.info("Saving Beverage {}", b.getName()))
+                .doOnNext(b -> tasteBlocking(b))
+//                .flatMap(b -> tasteAsynchronously(b))
+                .doOnNext(b -> LOG.info("Now Saving Beverage {}", b.getName()))
                 .map(Beverage::getName)
                 .flatMap(repository::findByName)
                 .doOnNext(b -> LOG.info("Already exists : {}", b))
                 .switchIfEmpty(newBeverage);
+    }
+
+    private void tasteBlocking(Beverage beverage) {
+        LOG.info("Tasting {}...", beverage.getName());
+        try {
+            Thread.sleep(beverage.getAlcoholRate().longValue() * 100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Someting whent wrong while tasting", e);
+        }
+        LOG.info("{} is tasted ok", beverage.getName());
+    }
+
+    private Mono<Beverage> tasteAsynchronously(Beverage beverage) {
+        return Mono.just(beverage)
+                .doOnNext(b -> LOG.info("Tasting {}...", b.getName()))
+                .doOnNext(b -> {
+                    try {
+                        Thread.sleep(beverage.getAlcoholRate().longValue() * 100);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException("Someting whent wrong while tasting", e);
+                    }
+                })
+//                .delayElement(Duration.of(beverage.getAlcoholRate().longValue() * 100, ChronoUnit.MILLIS))
+                .doOnNext(b -> LOG.info("{} is tasted ok", b.getName()));
     }
 
     public Mono<Beverage> findOne(String id) {
