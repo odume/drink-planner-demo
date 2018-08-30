@@ -42,26 +42,24 @@ public class BeverageService {
 
     private void tasteBlocking(Beverage beverage) {
         LOG.info("Tasting {}...", beverage.getName());
-        try {
-            Thread.sleep(beverage.getAlcoholRate().longValue() * 100);
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Someting whent wrong while tasting", e);
-        }
+        sleep(beverage);
         LOG.info("{} is tasted ok", beverage.getName());
     }
 
     private Mono<Beverage> tasteAsynchronously(Beverage beverage) {
         return Mono.just(beverage)
-                .doOnNext(b -> LOG.info("Tasting {}...", b.getName()))
-                .doOnNext(b -> {
-                    try {
-                        Thread.sleep(beverage.getAlcoholRate().longValue() * 100);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException("Someting whent wrong while tasting", e);
-                    }
-                })
+                .doOnNext(this::tasteBlocking);
+//                .doOnNext(b -> LOG.info("Tasting {}...", b.getName()))
 //                .delayElement(Duration.of(beverage.getAlcoholRate().longValue() * 100, ChronoUnit.MILLIS))
-                .doOnNext(b -> LOG.info("{} is tasted ok", b.getName()));
+//                .doOnNext(b -> LOG.info("{} is tasted ok", b.getName()));
+    }
+
+    private void sleep(Beverage beverage) {
+        try {
+            Thread.sleep(beverage.getAlcoholRate().longValue() * 100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Someting whent wrong while tasting", e);
+        }
     }
 
     public Mono<Beverage> findOne(String id) {
