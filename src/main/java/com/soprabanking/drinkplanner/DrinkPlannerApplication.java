@@ -16,7 +16,6 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
@@ -55,10 +54,9 @@ public class DrinkPlannerApplication {
 
             LOG.info("Created");
 
-            Scheduler saving = Schedulers.newElastic("saving");
             Mono<Tuple2<Long, Long>> trappistCount = beverages
                     .doOnNext(b -> LOG.info("Processing {}", b.getName()))
-                    .flatMap(b -> beverageService.save(b).subscribeOn(saving))
+                    .flatMap(b -> beverageService.save(b))
                     .doOnNext(b -> LOG.info("Processed {}", b.getName()))
                     .filter(Beverage::isTrappist)
                     .count()

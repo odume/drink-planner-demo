@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 @Service
 public class BeverageService {
@@ -19,6 +21,9 @@ public class BeverageService {
     private BeverageRepository repository;
 
     private BeverageCache cache;
+
+    private Scheduler saving = Schedulers.newElastic("saving");
+
 
     public BeverageService(BeverageRepository repository, BeverageCache cache) {
         this.repository = repository;
@@ -31,6 +36,7 @@ public class BeverageService {
                 .doOnSuccess(b -> LOG.info("{} saved successfully", b.getName()));
 
         return Mono.just(beverage)
+                .publishOn(saving)
 //                .doOnNext(b -> tasteBlocking(b))
                 .flatMap(b -> tasteAsynchronously(b))
                 .doOnNext(b -> LOG.info("Now Saving Beverage {}", b.getName()))
