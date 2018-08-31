@@ -49,7 +49,7 @@ public class DrinkPlannerApplication {
                     Tuples.of("Bush Ambrée", 12f, 33L, false),
                     Tuples.of("Orval", 6.5f, 33L, true),
                     Tuples.of("Vittel", 0f, 50L, false),
-                    Tuples.of("Hoogaerden", 4f, 25L, false),
+                    Tuples.of("Hoegaarden", 4f, 25L, false),
                     Tuples.of("Cuvée des Trolls", 7f, 25L, false))
                     .zipWith(ids, (b, id) -> new Beverage(id, b.getT1(), b.getT2(), b.getT3(), b.getT4()));
 
