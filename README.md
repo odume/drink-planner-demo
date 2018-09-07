@@ -86,9 +86,9 @@ Visible Benefits:
 Clearly, the bottleneck is the taste method, which takes a lot of time to execute depending on the alcohol rate of the beverage.
 In its current version, it is synchronous and blocking, and invoked from a ```doOnNext()``` operator.
 
-Let's try to make it asynchronous. The best way, if you can't modify the code, is to wrap the method into an asynchronous Mono (or Flux) and call it within a ```flatmap()```.
+Let's try to make it asynchronous. The best way, if you can't modify the code, is to wrap the method into an asynchronous Mono (or Flux) and call it within a ```flatMap()```.
 
-> Note: the wrapper method already exists, you simply have to uncomment the flatmap line and comment the doOnNext line in the save method.
+> Note: the wrapper method already exists, you simply have to uncomment the flatMap line and comment the doOnNext line in the save method.
 
 Visible Benefits:
 
@@ -110,7 +110,7 @@ The save service is already asynchronous (it returns a Mono). Lets make it run o
 Visible Benefits:
 
 * Now we clearly declare that the calls to 'save' for every item should be performed on a thread pool, using one thread per beverage. This clearly enables parallelism. The whole process now takes ~1,2s to complete, which is the time it takes to taste a Bush.
-* Notice that the order in which beverages are effectively created has been modified compared to the previous scenario. Vittel is now created first because it takes no time to taste it. Why? Because 'save' is asynchronous and ```flatmap()``` doesn't care about initial order.
+* Notice that the order in which beverages are effectively created has been modified compared to the previous scenario. Vittel is now created first because it takes no time to taste it. Why? Because 'save' is asynchronous and ```flatMap()``` doesn't care about initial order.
 
 ### 4. Run the taste method on an elastic scheduler
 
@@ -120,9 +120,45 @@ To do this, undo the previous step and redo it again only on the taste method.
 
 > Note: again, name your scheduler. Make sure you use only one.
 
-> Note: if you succeeded and like challenges, try to to the same with the blocking taste method (so without the changes made at step 2). See why making it asynchronous is a good idea ?
+> Note: if you succeeded and like challenges, try to to the same with the blocking taste method (so without the changes made at step 2). See why making it asynchronous was a good idea ?
 
- 
+Visible Benefits:
+
+* Not much compared to the previous step. This is mostly another design option where only the bottleneck is set on a different scheduler.
+
+> Note: Usually it is a good practice to stay agnostic on concurrency within a method, so the consumer can decide if it must run on a scheduler or not (using subscribeOn).
+
+> However, when the method is known to be slow by design, it might be a good idea to force it always on its own scheduler (using publishOn), just like the reactive MongoDB driver did (see above).
+
+### 5. Refactor the taste method to be non-blocking
+
+Currently, the taste method, even if asynchronous, is just a wrapper around ugly code that blocks the thread. What if we have access to the code and can rewrite it in a non-blocking way?
+
+Reactor has an operator ```delayElements``` that delays any event for a given time, which is exactly what we want to do. By default, it is scheduled on the parallel scheduler, which has a fixed number of threads equal to the number of CPU cores (2 in my case).
+
+Try to comment the current implementation of ```taseAsynchronously()``` and uncomment the alternative implementation. You can also remove any scheduler used at step 4.
+
+Visible Benefits:
+
+* The process runs just as smooth but with less threads. Using an elastic scheduler is not necessary anymore
+* It doesn't look very spectacular, but think about repeating the initial sequence of beers a thousand times (making 6000 beers to taste :-| ). Then you can probably measure the impact on memory and thread consumption.
+
+> Note: this is exactly what happens when you replace the classical MongoDB driver by the reactive, non-blocking driver. Wrapping the classical driver into reactive code is ok, but it's still blocking threads.
+
+### 6. Keep the initial order of beers
+
+What if the order of beers in the initial sequence was important? Due to ```flatMap``` operator subscribing eagerly to every sub-publisher and simply merging events as they come, the initial order is currently lost.
+
+Which other operator could you use to guarantee the beers are created following their initial order? What is the impact on concurrency?
+
+> ```concatMap``` is the operator that guarantees the initial order, because is subscribes to sub-publishers sequentially. The consequence is that concurrency is lost.     
+
+> ```flatMapSequential``` seems a good idea at first, but it subscribes eagerly to all sub-publishers, just like ```flatMap``` does. Only the output is set back to the initial order.
+
+So we cannot have both concurrency and initial order by just replacing an operator by another one. It looks however possible to change the logic and the code in order to (for example) taste all the beers in parallel but save them sequentially.
+This needs a bit of refactoring though. Don't hesitate to have a try ;-)
+
+
  
 
 
