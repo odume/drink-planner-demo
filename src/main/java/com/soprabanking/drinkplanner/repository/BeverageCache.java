@@ -29,7 +29,8 @@ public class BeverageCache {
     }
 
     public Mono<Beverage> get(String key) {
-        return beverageOps.opsForValue().get(key)
+        return beverageOps.opsForValue()
+                .get(key)
                 .doOnSubscribe(s -> LOG.info("Trying to get beverage with id {} from cache", key))
                 .doOnNext(b -> LOG.info("Got beverage {} from cache", b.getName()));
     }
