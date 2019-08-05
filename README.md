@@ -7,10 +7,6 @@ Slides of the presentation can be found here:
 * Part 1 - the basics: https://odume.github.io/slides-reactive-programming-basic
 * Part 2 - advanced: https://odume.github.io/slides-reactive-programming-advanced
 
-Videos of the presentation can be found here:
-* Part 1 - the basics: https://web.microsoftstream.com/video/ec8ba50f-bded-4441-9f17-dc996750240b
-* Part 2 - advanced: https://web.microsoftstream.com/video/0987b1f1-d1a6-405a-84b5-97f021a83b3c
-
 ## Design
 
 It is a Spring Boot 2 application, built with Gradle.  It relies on a MongoDB database and a Redis cache. They both need to be available on localhost for the app to start correctly.
